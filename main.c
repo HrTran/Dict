@@ -74,6 +74,7 @@ void RestoreDataFile()
 }
 void doRestore(GtkWidget *button, Widgets *app){
     RestoreDataFile();
+    GtkTextBuffer *textbuffer;
     gtk_entry_set_text(app->searchentry,"");
     gtk_text_buffer_set_text(textbuffer,"",-1);
     gtk_widget_hide(del);
