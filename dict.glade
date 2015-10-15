@@ -59,6 +59,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="doRestore" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -95,23 +96,6 @@
                 <property name="position">2</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkButton" id="button1">
-                <property name="label">gtk-quit</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="xalign">0.47999998927116394</property>
-                <property name="always_show_image">True</property>
-                <signal name="activate" handler="gtk_main_quit" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -125,11 +109,12 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkButton" id="search">
-                <property name="label">gtk-find</property>
+                <property name="label">Translate
+</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
+                <property name="relief">none</property>
                 <property name="always_show_image">True</property>
                 <signal name="clicked" handler="doSearch" swapped="no"/>
               </object>
@@ -142,7 +127,7 @@
             </child>
             <child>
               <object class="GtkSearchEntry" id="searchentry">
-                <property name="width_request">355</property>
+                <property name="width_request">565</property>
                 <property name="height_request">50</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -198,6 +183,7 @@
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="doAdd" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -212,6 +198,7 @@
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="doEdit" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -227,6 +214,7 @@
                 <property name="margin_bottom">1</property>
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="doRemove" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

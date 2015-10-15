@@ -21,6 +21,142 @@ GtkWidget  *restore, *about, *dev;
 GtkWidget  *search;
 GtkWidget  *add, *edit, *del;
 
+
+// int AddEntryClicked(BTA*b, char* wordFind, char* defnTemp)
+// {
+//     return (!btins(b,wordFind,defnTemp,sizeof(char)*6500));
+// }
+
+// static void on_addok_clicked(GtkWidget *button, Widgets *A, BTA *b)
+// {
+//     GtkTextIter start, end;
+//     GtkTextBuffer *buffer = gtk_text_view_get_buffer (A->defnview);
+//     gchar *texte;
+//     gchar *textd;
+
+//     gtk_text_buffer_get_bounds (buffer, &start, &end);
+
+//     btinit();
+//     b = btopn("BTdata", 0, 0);
+
+//     texte = gtk_entry_get_text(GTK_ENTRY(A->entry));
+//     textd = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+
+//     AddEntryClicked(b,texte,textd);
+//     gtk_entry_set_text(A->entry,"");
+//     gtk_text_buffer_set_text(buffer,"", -1);
+
+//     btcls(b);
+// }
+#define BlockSize 64
+void CopybyBlock(FILE *fin, FILE *fout)
+{
+    int num;
+    char buff[BlockSize + 1];
+    while (!feof(fin))
+    {
+        num = fread(buff, sizeof(char),BlockSize, fin);
+        buff[num * sizeof(char)] = '\0';
+        fwrite(buff, sizeof(char), num, fout);
+    }
+}
+
+void RestoreDataFile()
+{
+    btcls(tree);
+    remove("data/tudienanhviet.dat");
+    FILE* ori = fopen("data/tudienanhviet.old","rb");
+    FILE* cur = fopen("data/tudienanhviet.dat", "wb");
+    CopybyBlock(ori, cur);
+    //tree = btopn("BTdata", 0, 0);
+    fclose(ori);
+    fclose(cur);
+}
+void doRestore(GtkWidget *button, Widgets *app){
+    RestoreDataFile();
+    gtk_entry_set_text(app->searchentry,"");
+    gtk_text_buffer_set_text(textbuffer,"",-1);
+    gtk_widget_hide(del);
+    gtk_widget_hide(edit);
+    gtk_widget_hide(add);
+    btcls(tree); 
+}
+void doEdit(GtkWidget *button, Widgets *app){
+    tree = btopn("data/tudienanhviet.dat", 0, 0);
+    GtkTextIter start, end;
+    gchar *text,*btext;
+    GtkTextBuffer *textbuffer;
+    textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
+    text = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
+    gtk_text_buffer_get_bounds (textbuffer, &start, &end);
+    btext=gtk_text_buffer_get_text(textbuffer,&start,&end ,FALSE);
+    long value;
+    if (bfndky(tree,text,&value)==0)  
+    {
+        btupd(tree,text,btext,strlen(btext)+1);   
+    }
+    gtk_entry_set_text(app->searchentry,"");
+    gtk_text_buffer_set_text(textbuffer,"",-1);
+    gtk_widget_hide(del);
+    gtk_widget_hide(edit);
+    gtk_widget_hide(add);
+    btcls(tree); 
+}
+void doAdd(GtkWidget *button, Widgets *app){
+    tree = btopn("data/tudienanhviet.dat", 0, 0);
+    GtkTextIter start, end;
+    gchar *text,*btext;
+    GtkTextBuffer *textbuffer;
+    textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
+    text = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
+    gtk_text_buffer_get_bounds (textbuffer, &start, &end);
+    btext=gtk_text_buffer_get_text(textbuffer,&start,&end ,FALSE);
+
+    //printf("%s",btext);
+    long value;
+    if (bfndky(tree,text,&value)!=0)  //Neu s1 khong co
+    {
+        //printf("\n%s-%s-%d",s1,s3,strlen(s3));
+        btins(tree,text,btext,strlen(btext)+1);   //insert vao btree
+    }
+
+
+    gtk_entry_set_text(app->searchentry,"");
+    gtk_text_buffer_set_text(textbuffer,"",-1);
+    gtk_widget_hide(del);
+    gtk_widget_hide(edit);
+    gtk_widget_hide(add);
+    btcls(tree); 
+}
+void doRemove(GtkWidget *button, Widgets *app)
+{
+    tree = btopn("data/tudienanhviet.dat", 0, 0);
+    gchar *text;
+    GtkTextBuffer *textbuffer;
+    textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
+    text = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
+
+    //printf("%s",text);
+    char defnFind[6500];
+    int rsize;
+    long value;
+    //int exist = btsel(tree, text, defnFind, sizeof(defnFind), &rsize);
+    int exist = bfndky(tree,text,&value);
+    //printf("%d",exist);
+    if (exist == 0)
+    {
+         bdelky(tree, text);
+         //printf("Del %s",text);
+    }
+
+
+    gtk_entry_set_text(app->searchentry,"");
+    gtk_text_buffer_set_text(textbuffer,"",-1);
+    gtk_widget_hide(del);
+    gtk_widget_hide(edit);
+    gtk_widget_hide(add);
+    btcls(tree); 
+}
 void
 doSearch (GtkButton *button,Widgets *app){
     gtk_widget_hide(del);
@@ -34,7 +170,7 @@ doSearch (GtkButton *button,Widgets *app){
     GtkTextBuffer *textbuffer;
     textget = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
     textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
-    
+    //printf("%s",textget);
     if (strcmp(textget,"")==0){ 
         gtk_text_buffer_set_text(textbuffer,"",-1);
         
