@@ -6,14 +6,18 @@
 
    Update giao diện mới. Có thể sẽ nghiên cứu thêm tính năng giống google translate:
 
+Cách compile file taobtree.c
+gcc -o taotree taobtree.c libbt.a 
+File taobtree.c này có tác dụng tạo ra file dữ liệu từ điển (file.dat) từ 2 file từ điển và file từ điển index.
+
 ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----
-File data.dat vẫn chưa hoàn thiện(vì lỗi stack over flow) , vậy nên tôi đã cắt một nửa cuối của file dữ liệu nhằm hạn chế lỗi.
-Cần anh em viết lại hàm tạo btree (gồm các hàm đổi cơ số, xử lý xâu) . 
+File .dat vẫn chưa hoàn thiện(vì taobtree.c bị lỗi stack over flow) , vậy nên tôi đã cắt một nửa cuối của file dữ liệu nhằm hạn chế lỗi.
+Cần anh em viết lại hàm taobtree.c (gồm các hàm đổi cơ số, xử lý xâu) . 
 Tài liệu có thể tham khảo ở đây:
 http://www.quantrimang.com.vn/print/4973.aspx
 ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----
 
-CÁch sử dụng
+CÁch sử dụng từ điển:
 -----------------------------------------
 Tạo file libbt.a trong btree 5.0 (make file)
 copy file libbt.a vào thư mục gốc (dict)
