@@ -35,12 +35,6 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkListStore" id="suggestlist">
-    <columns>
-      <!-- column-name wordsuggest -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
     <signal name="destroy" handler="gtk_main_quit" swapped="no"/>
@@ -156,15 +150,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkTreeView" id="suggests">
-            <property name="height_request">62</property>
+          <object class="GtkEntry" id="suggests">
+            <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="model">suggestlist</property>
-            <property name="search_column">1</property>
-            <property name="enable_grid_lines">both</property>
-            <child internal-child="selection">
-              <object class="GtkTreeSelection" id="treeview-selection2"/>
-            </child>
+            <property name="editable">False</property>
+            <property name="progress_pulse_step">0</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -233,11 +223,50 @@
           <object class="GtkBox" id="box3">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledtreewindow">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_top">4</property>
+                <property name="margin_bottom">4</property>
+                <property name="shadow_type">in</property>
+                <property name="min_content_width">0</property>
+                <property name="min_content_height">427</property>
+                <child>
+                  <object class="GtkTreeView" id="treeview">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">foundlist</property>
+                    <property name="headers_clickable">False</property>
+                    <property name="search_column">0</property>
+                    <property name="enable_grid_lines">both</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="treeview-selection7"/>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn1">
+                        <property name="title" translatable="yes">Tu da tim</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow2">
-                <property name="width_request">436</property>
-                <property name="height_request">273</property>
+                <property name="width_request">488</property>
+                <property name="height_request">278</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
@@ -248,45 +277,6 @@
                     <property name="can_focus">True</property>
                     <property name="resize_mode">immediate</property>
                   </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="box4">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkScrolledWindow" id="scrolledwindow1">
-                    <property name="width_request">111</property>
-                    <property name="height_request">200</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="shadow_type">in</property>
-                    <child>
-                      <object class="GtkTreeView" id="found">
-                        <property name="height_request">1</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="model">foundlist</property>
-                        <property name="search_column">0</property>
-                        <property name="enable_grid_lines">vertical</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection" id="treeview-selection"/>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
               </object>
               <packing>

@@ -1,10 +1,16 @@
 # Dict
          Từ điển Anh - Việt. 
 
-                Phiên bản 1.02b. 
-  Mới chỉ có giao diện và vài chức năng cơ bản (thêm sửa xóa restore)
+                Phiên bản 1.1 beta
 
-   Update giao diện mới. Có thể sẽ nghiên cứu thêm tính năng giống google translate:
+  update chức năng gợi ý từ
+
+   Update giao diện mới. 
+
+   /////////////BUG  BUG  BUG  BUG  BUG  BUG  BUG  ///
+   BUG mới, chức năng restore hoạt động nhưng trương trình bị out ngay lập tức
+   Cần fix
+   -------------------------------------------------------
 
 Cách compile file taobtree.c
 gcc -o taotree taobtree.c libbt.a 

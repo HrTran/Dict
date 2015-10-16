@@ -5,13 +5,14 @@
 #include <string.h>
 #include "inc/btree.h"
 #include <gtk/gtk.h>
+#include "gdkkeysyms.h"
 
 typedef struct
 {
     GtkWidget *searchentry;
     GtkWidget *textview;
     GtkListStore *foundlist;
-    GtkListStore *suggestslist;
+    GtkWidget *suggests;
 } Widgets;
 
 
@@ -61,16 +62,25 @@ void CopybyBlock(FILE *fin, FILE *fout)
     }
 }
 
+#define size 512
 void RestoreDataFile()
 {
     btcls(tree);
     remove("data/tudienanhviet.dat");
     FILE* ori = fopen("data/tudienanhviet.old","rb");
     FILE* cur = fopen("data/tudienanhviet.dat", "wb");
-    CopybyBlock(ori, cur);
-    //tree = btopn("BTdata", 0, 0);
+    //CopybyBlock(ori, cur);
+    int n;
+    char buffer[512];
+    while (!feof(ori))
+    {
+        n=fread(buffer,1,size,ori);
+        //if (n==0) break;
+        fwrite(buffer,1,n,cur);
+    }
     fclose(ori);
     fclose(cur);
+    tree = btopn("data/tudienanhviet.dat", 0, 0);
 }
 void doRestore(GtkWidget *button, Widgets *app){
     RestoreDataFile();
@@ -158,12 +168,158 @@ void doRemove(GtkWidget *button, Widgets *app)
     gtk_widget_hide(add);
     btcls(tree); 
 }
+
+//SOUNDEX   SOUNDEX   SOUNDEX   SOUNDEX   SOUNDEX   SOUNDEX   SOUNDEX   SOUNDEX   
+char **NextWordSoundex(BTA *sdx, char *sdxFind)  // Tham so la ma soundex cua tu vua tra nghia
+{
+    char similarWord[10000], *p;
+    char **result = malloc(1000 * sizeof(char *));
+
+    int rsize, n;
+    n = 0;
+    btsel(sdx, sdxFind, similarWord, sizeof(similarWord), &rsize);
+    p = strtok(similarWord, "-");
+    while (p != NULL)
+    {
+        result[n] = malloc(100);
+        result[n++] = strdup(p);
+        p = strtok(NULL, "-");
+    }
+    result[n] = NULL;
+    return result;
+}
+
+char *soundex(char *chAlphaName)
+{
+    int i;
+    int j = 0;
+    char SCode = '0';
+    char PrevCode = '0';
+    char CharTemp = '0';
+    char *strResult = malloc(sizeof(strlen(chAlphaName)));
+
+    for (i = 0; i < strlen(chAlphaName); i++)
+    {
+        chAlphaName[i]=tolower(chAlphaName[i]);
+    }
+
+    for (i = 0; (i < strlen(chAlphaName) && j < 4); i++)
+    {
+        CharTemp = chAlphaName[i];
+
+        switch(CharTemp)
+        {
+        case 'r':
+            SCode = '6';
+            break;
+        case 'm':
+        case 'n':
+            SCode='5';
+            break;
+        case 'l':
+            SCode='4';
+            break;
+        case 'd':
+        case 't':
+            SCode='3';
+            break;
+        case 'c':
+        case 'g':
+        case 'j':
+        case 'k':
+        case 'q':
+        case 's':
+        case 'x':
+        case 'z':
+            SCode = '2';
+            break;
+        case 'b':
+        case 'f':
+        case 'p':
+        case 'v':
+            SCode = '1';
+            break;
+        default:
+            SCode = '0';
+            break;
+        }
+
+        if (SCode > '0' || j==0)
+        {
+            //SCode la chu cai dau tien
+            if (j == 0)
+            {
+                strResult[j] = chAlphaName[j];
+
+                j++;
+            }
+            else if (SCode != PrevCode)
+            {
+                strResult[j] = SCode;
+                j++;
+            }
+        }
+
+
+        if (CharTemp == 'h' || CharTemp == 'w')
+        {
+            SCode = PrevCode;
+        }
+
+        PrevCode = SCode;
+        SCode = '0';
+
+    }
+
+    for (i = j; i < 4; i++)
+    {
+        strResult[i] = '0' ;
+    }
+    strResult[i]='\0';
+    return strResult;
+}
+
+//----------------------------------------------------------------------
+
+void SearchSuggest(BTA*b, int n, char* wordFind, Widgets *app)
+{
+    GtkTreeIter  iter;
+    int i, rsize;
+    char tmp[85];
+    strcpy(tmp, wordFind);
+    char defnFind[6500];
+    char pre[85], now[85];
+    char suggests[100];
+    strcpy(suggests,"");
+    int check;
+    for(i=0; i<n; i++)
+    {
+        check=btseln(b, wordFind, defnFind, 6500, &rsize);
+        if(check!=0){
+            gtk_entry_set_text(app->suggests,"");
+            return;
+        }
+        strcpy(now, wordFind);
+        if (strcmp(pre,now)==0) break;
+        strncat(suggests,now,strlen(now));
+        strncat(suggests," ",1);
+        strcpy(pre,now);
+        // if(btseln(b,wordFind,defnFind,100,&rsize)==0) strncat(suggests,wordFind,100);
+        // strncat(suggests,"  ",2);
+    }
+    gtk_entry_set_text(app->suggests,suggests);
+    strcpy(wordFind,tmp);
+}
+
+#define NUMBERSUGGEST 10
 void
 doSearch (GtkButton *button,Widgets *app){
+    char suggestword[85];
     gtk_widget_hide(del);
     gtk_widget_hide(edit);
     gtk_widget_hide(add);
     int check=1;
+
     tree = btopn("data/tudienanhviet.dat", 0, 0);
     char defnTemp[6500];
     int rsize;
@@ -172,22 +328,26 @@ doSearch (GtkButton *button,Widgets *app){
     textget = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
     textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
     //printf("%s",textget);
-    if (strcmp(textget,"")==0){ 
-        gtk_text_buffer_set_text(textbuffer,"",-1);
+    strcpy(suggestword, textget);
+    if (strcmp(textget,"")==0){     //neu search entry == null
+        gtk_text_buffer_set_text(textbuffer,"",-1); //xoa text view
         
     }
     else{
         check=btsel(tree, textget, defnTemp, sizeof(defnTemp), &rsize);
-        if (/**strcmp(defnTemp,"")==0*/check){
-            gtk_text_buffer_set_text(textbuffer,"Not found",-1);
+        if (/**strcmp(defnTemp,"")==0*/check){  //neu khong tim duoc
+            gtk_text_buffer_set_text(textbuffer,"Not found.\nInput to add",-1);
             gtk_widget_show(add);
+            SearchSuggest(tree,NUMBERSUGGEST,suggestword,app);
+            
         }
-        else{
+        else{   //neu tim duoc
             gtk_text_buffer_set_text(textbuffer,defnTemp,-1);
             gtk_widget_show(del);
             gtk_widget_show(edit);
         }
     }
+    
     btcls(tree); 
 }
 
@@ -229,8 +389,9 @@ main (int argc, char *argv[])
 	   widget->searchentry = GTK_WIDGET( gtk_builder_get_object( builder, "searchentry" ) );
     widget->textview = GTK_WIDGET( gtk_builder_get_object( builder, "textview" ) );
     widget->foundlist = GTK_LIST_STORE( gtk_builder_get_object( builder, "foundlist" ) );
-    widget->suggestslist = GTK_LIST_STORE( gtk_builder_get_object( builder, "suggestslist" ) );
-
+    widget->suggests = GTK_WIDGET( gtk_builder_get_object( builder, "suggests" ) );
+    //widget->suggestslist = GTK_LIST_STORE( gtk_builder_get_object( builder, "suggestslist" ) );
+   
     //g_signal_connect(G_OBJECT(search) , "clicked", G_CALLBACK(doSearch), (gpointer) widget);
 
 
