@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include "inc/btree.h"
 typedef struct xau_s {
 	char tu[100];
 	char vitri[20];
@@ -82,7 +82,7 @@ long luy_thua (int chiso, int luythua){
 	return chiso*ketqua;
 }
 
-long change_base_10(char *str) {
+long change_base_10(char *str) {  /* chuyen he co so 64 -> 10 */
 	char SAMPLE[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	long ketqua=0;
 	long sohang=0;
@@ -100,3 +100,47 @@ long change_base_10(char *str) {
 // 	printf("%li\n", change_base_10(str));
 // 	return 0;
 // }
+
+char *timkiem(char *str, FILE *fp){            /* tim kiem nghia cua tu trong file tu dien */
+	XAU tach;
+	long vitri, dodai;
+	char *nghia;
+
+	tach = xu_ly_xau(str);
+	vitri = change_base_10(tach.vitri);
+	dodai = change_base_10(tach.dodai);
+	nghia = (char *)malloc(sizeof(char)*(dodai + 1));
+
+	fseek(fp, vitri, SEEK_SET);
+	fread(nghia, sizeof(char), dodai, fp);
+	nghia[dodai+1] = '\0';
+	return nghia;
+}
+
+void insert_btree(){                 /* doc ly lieu vao cay */
+	FILE *fp1, *fp2;
+	BTA *tree;
+	char *str;
+	XAU daxuly;
+	fp1 = fopen("data/anhviet109K.index", "r");
+	fp2 = fopen("data/anhviet109K.dict", "r");
+	btinit();
+
+	tree = btcrt("data/tudienanhviet.dat", 0, 0);
+	btopn("data/tudienanhviet.dat", 0, 0);
+
+	while (!feof(fp1)) {
+		fgets(str, 81, fp1);
+		daxuly = xu_ly_xau(str);
+		btins(tree, daxuly.tu, timkiem(str, fp2), change_base_10(daxuly.dodai) + 1 );
+		free(str);
+	}
+	btcls(tree);
+	fclose(fp1);
+	fclose(fp2);
+}
+
+int main(){
+	btinit();
+	insert_btree();	
+}
