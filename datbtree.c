@@ -30,7 +30,7 @@ XAU xu_ly_xau(char *str) {			/* break the input into 3 parts */
 	strcpy(str_temp, str);
 
 	for (i=0; i<20; i++){
-		if (xuly.dodai[i] == ' '){
+		if (xuly.dodai[i] == ' ' || xuly.dodai[i] == '\t'){
 			xuly.dodai[i] = '\0';
 			j = i; break;
 		}
@@ -92,6 +92,7 @@ long change_base_10(char *str) {  /* chuyen he co so 64 -> 10 */
 		sohang = luy_thua(lay_chiso(str[i], SAMPLE), i);
 		ketqua += sohang;
 	}
+	strrev(str);
 	return ketqua;
 }
 
@@ -105,42 +106,60 @@ char *timkiem(char *str, FILE *fp){            /* tim kiem nghia cua tu trong fi
 	XAU tach;
 	long vitri, dodai;
 	char *nghia;
-
 	tach = xu_ly_xau(str);
 	vitri = change_base_10(tach.vitri);
 	dodai = change_base_10(tach.dodai);
-	nghia = (char *)malloc(sizeof(char)*(dodai + 1));
-
+	nghia = (char *)calloc(dodai+1, 1);
 	fseek(fp, vitri, SEEK_SET);
-	fread(nghia, sizeof(char), dodai, fp);
-	nghia[dodai+1] = '\0';
+	long n = ftell(fp);
+	fread(nghia, 1, dodai, fp);
+	nghia[dodai] = '\0';
 	return nghia;
 }
 
-void insert_btree(){                 /* doc ly lieu vao cay */
+// void insert_btree(){                 /* doc ly lieu vao cay */
+// 	FILE *fp1, *fp2;
+// 	BTA *tree;
+// 	char *str;
+// 	XAU daxuly;
+// 	fp1 = fopen("data/anhviet109K.index", "r");
+// 	fp2 = fopen("data/anhviet109K.dict", "r");
+// 	btinit();
+
+// 	tree = btcrt("data/tudienanhviet.dat", 0, 0);
+// 	btopn("data/tudienanhviet.dat", 0, 0);
+
+// 	while (!feof(fp1)) {
+// 		fgets(str, 81, fp1);
+// 		daxuly = xu_ly_xau(str);
+// 		btins(tree, daxuly.tu, timkiem(str, fp2), change_base_10(daxuly.dodai) + 1 );
+// 		free(str);
+// 	}
+// 	btcls(tree);
+// 	fclose(fp1);
+// 	fclose(fp2);
+// } 
+
+// int main(){
+// 	btinit();
+// 	insert_btree();	
+// }
+
+int main (){
+	char string[] = "enthusiasm	K4ej	BR";
 	FILE *fp1, *fp2;
-	BTA *tree;
-	char *str;
-	XAU daxuly;
 	fp1 = fopen("data/anhviet109K.index", "r");
 	fp2 = fopen("data/anhviet109K.dict", "r");
-	btinit();
-
-	tree = btcrt("data/tudienanhviet.dat", 0, 0);
-	btopn("data/tudienanhviet.dat", 0, 0);
-
-	while (!feof(fp1)) {
-		fgets(str, 81, fp1);
-		daxuly = xu_ly_xau(str);
-		btins(tree, daxuly.tu, timkiem(str, fp2), change_base_10(daxuly.dodai) + 1 );
-		free(str);
-	}
-	btcls(tree);
+	char *str = timkiem(string, fp2);
+	printf("%s\n", str);
 	fclose(fp1);
 	fclose(fp2);
+	return 0;
 }
 
-int main(){
-	btinit();
-	insert_btree();	
-}
+
+
+
+
+
+
