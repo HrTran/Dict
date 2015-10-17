@@ -1,10 +1,11 @@
-# Dict
+# Helpful Dictionary Program
          Từ điển Anh - Việt. 
 
-                Phiên bản 1.2
+                Phiên bản 1.3 Beta
 
-  update chức năng danh sách từ đã tra
-  thêm chức năng gợi ý theo thời gian thực
+  Hoàn thiện gần hết chức năng, 
+  Chỉnh giao diện hợp lý hơn. Thêm logo, tên trương trình
+  Thiếu chức năng xem lại từ đã tra(Làm cả ngày chưa được)
 
    /////////////BUG  BUG  BUG  BUG  BUG  BUG  BUG  ///
    BUG mới, chức năng restore hoạt động nhưng trương trình bị out ngay lập tức
