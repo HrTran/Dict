@@ -1,11 +1,10 @@
 # Dict
          Từ điển Anh - Việt. 
 
-                Phiên bản 1.1 beta
+                Phiên bản 1.2
 
-  update chức năng gợi ý từ
-
-   Update giao diện mới. 
+  update chức năng danh sách từ đã tra
+  thêm chức năng gợi ý theo thời gian thực
 
    /////////////BUG  BUG  BUG  BUG  BUG  BUG  BUG  ///
    BUG mới, chức năng restore hoạt động nhưng trương trình bị out ngay lập tức

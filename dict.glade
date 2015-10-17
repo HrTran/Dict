@@ -134,7 +134,8 @@
                 <property name="primary_icon_name">edit-find-symbolic</property>
                 <property name="primary_icon_activatable">False</property>
                 <property name="primary_icon_sensitive">False</property>
-                <signal name="activate" handler="doSearch" swapped="no"/>
+                <signal name="activate" handler="key_enter" swapped="no"/>
+                <signal name="search-changed" handler="quickSuggest" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -239,7 +240,8 @@
                     <property name="model">foundlist</property>
                     <property name="headers_clickable">False</property>
                     <property name="search_column">0</property>
-                    <property name="enable_grid_lines">both</property>
+                    <property name="enable_grid_lines">vertical</property>
+                    <signal name="cursor-changed" handler="selectRow" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="treeview-selection7"/>
                     </child>
