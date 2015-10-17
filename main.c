@@ -6,8 +6,8 @@
 #include "inc/btree.h"
 #include <gtk/gtk.h>
 
-#define NUMBERSUGGEST 10
-#define MAXSUGGESTCHAR 90
+#define NUMBERSUGGEST 30
+#define MAXSUGGESTCHAR 100
 
 typedef struct
 {
@@ -19,64 +19,47 @@ typedef struct
 
 
 BTA *tree,*sug;
+GtkWidget  *window;
 
 GtkWidget  *restore, *about, *dev;
-
 GtkWidget  *search;
-
-GtkWidget  *add, *edit, *del ,*undo;
-
-GtkWidget *treeview;
-GtkWidget *aboutdialog;
+GtkWidget  *add, *edit, *del , *undo;
+GtkWidget  *treeview;
+GtkWidget  *aboutdialog;
 GtkTextBuffer *buff;
 
 void closeAbout(GtkWidget *button, Widgets *app){
     gtk_widget_hide(aboutdialog);
 }
 
-#define BlockSize 64
-void CopybyBlock(FILE *fin, FILE *fout)
-{
-    int num;
-    char buff[BlockSize + 1];
-    while (!feof(fin))
-    {
-        num = fread(buff, sizeof(char),BlockSize, fin);
-        buff[num * sizeof(char)] = '\0';
-        fwrite(buff, sizeof(char), num, fout);
-    }
-}
-
 #define size 512
 void RestoreDataFile()
 {
-    btcls(tree);
     remove("data/tudienanhviet.dat");
     FILE* ori = fopen("data/tudienanhviet.old","rb");
     FILE* cur = fopen("data/tudienanhviet.dat", "wb");
-    //CopybyBlock(ori, cur);
     int n;
     char buffer[512];
     while (!feof(ori))
     {
         n=fread(buffer,1,size,ori);
-        //if (n==0) break;
+        if (n==0) break;
         fwrite(buffer,1,n,cur);
     }
     fclose(ori);
-    fclose(cur);
-    tree = btopn("data/tudienanhviet.dat", 0, 0);
+    fclose(cur);   
 }
+
 void doRestore(GtkWidget *button, Widgets *app){
     RestoreDataFile();
-    GtkTextBuffer *textbuffer;
+    GtkTextBuffer *textbuffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
     gtk_entry_set_text(app->searchentry,"");
     gtk_text_buffer_set_text(textbuffer,"",-1);
     gtk_widget_hide(del);
     gtk_widget_hide(edit);
     gtk_widget_hide(add);
-    btcls(tree); 
 }
+
 void doEdit(GtkWidget *button, Widgets *app){
     tree = btopn("data/tudienanhviet.dat", 0, 0);
     GtkTextIter start, end;
@@ -87,17 +70,15 @@ void doEdit(GtkWidget *button, Widgets *app){
     gtk_text_buffer_get_bounds (textbuffer, &start, &end);
     btext=gtk_text_buffer_get_text(textbuffer,&start,&end ,FALSE);
     long value;
-    if ((bfndky(tree,text,&value)==0)/**&&(strcmp(btext,""))*/)
+    if (bfndky(tree,text,&value)==0)
     {
         btupd(tree,text,btext,strlen(btext)+1);   
     }
-    // gtk_entry_set_text(app->searchentry,"");
-    // gtk_text_buffer_set_text(textbuffer,"",-1);
-    //gtk_widget_hide(del);
-    //gtk_widget_hide(edit);
+
     gtk_widget_hide(add);
     btcls(tree); 
 }
+
 void doAdd(GtkWidget *button, Widgets *app){
     tree = btopn("data/tudienanhviet.dat", 0, 0);
     GtkTextIter start, end;
@@ -107,22 +88,15 @@ void doAdd(GtkWidget *button, Widgets *app){
     text = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
     gtk_text_buffer_get_bounds (textbuffer, &start, &end);
     btext=gtk_text_buffer_get_text(textbuffer,&start,&end ,FALSE);
-
-    //printf("%s",btext);
     long value;
     if (bfndky(tree,text,&value)!=0)  //Neu s1 khong co
     {
-        //printf("\n%s-%s-%d",s1,s3,strlen(s3));
         btins(tree,text,btext,strlen(btext)+1);   //insert vao btree
     }
-
-    // gtk_entry_set_text(app->searchentry,"");
-    // gtk_text_buffer_set_text(textbuffer,"",-1);
-    //gtk_widget_hide(del);
-    //gtk_widget_hide(edit);
     gtk_widget_hide(add);
     btcls(tree); 
 }
+
 void doRemove(GtkWidget *button, Widgets *app)
 {
     tree = btopn("data/tudienanhviet.dat", 0, 0);
@@ -130,21 +104,15 @@ void doRemove(GtkWidget *button, Widgets *app)
     GtkTextBuffer *textbuffer;
     textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
     text = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
-
-    //printf("%s",text);
     char defnFind[6500];
     int rsize;
     long value;
-    //int exist = btsel(tree, text, defnFind, sizeof(defnFind), &rsize);
     int exist = bfndky(tree,text,&value);
-    //printf("%d",exist);
     if (exist == 0)
     {
          bdelky(tree, text);
-         //printf("Del %s",text);
-    }
-    
-    gtk_entry_set_text(app->searchentry,"");
+    }  
+ 	gtk_entry_set_text(app->searchentry,"");
     gtk_text_buffer_set_text(textbuffer,"",-1);
     gtk_widget_hide(del);
     gtk_widget_hide(edit);
@@ -176,16 +144,14 @@ void SearchSuggest(BTA*b, int n, char* wordFind, Widgets *app)
         strncat(suggests,"  ",2);
         strcpy(pre,now);
         if(strlen(suggests)>=MAXSUGGESTCHAR) break;
-        // if(btseln(b,wordFind,defnFind,100,&rsize)==0) strncat(suggests,wordFind,100);
-        // strncat(suggests,"  ",2);
     }
     gtk_entry_set_text(app->suggests,suggests);
     strcpy(wordFind,tmp);
 }
 
-////////////////////Khong dung function nay nua. Su dung 2 function ben duoi de thay the
 
-void doSearch (GtkButton *button,Widgets *app){
+
+void doSearch (GtkButton *button,Widgets *app){	//Khong su dung function nay nua. Su dung 2 function ben duoi de thay the
     char suggestword[85];
     gtk_widget_hide(del);
     gtk_widget_hide(edit);
@@ -222,7 +188,7 @@ void doSearch (GtkButton *button,Widgets *app){
     }  
     btcls(tree); 
 }
-//////////////////////////////////////////////////////////
+
 int isFind;
 void quickSuggest(GtkButton *button,Widgets *app){
     char suggestword[85];
@@ -230,47 +196,35 @@ void quickSuggest(GtkButton *button,Widgets *app){
         gtk_widget_hide(del);
         gtk_widget_hide(edit);
         gtk_widget_hide(add);
-        gtk_widget_hide(undo);
     }
     int check=1;
 
     char suggests[200];
     strcpy(suggests,"");
-
-    //tree = btopn("data/tudienanhviet.dat", 0, 0);
     char defnTemp[6500];
     int rsize;
     gchar *textget;
     GtkTextBuffer *textbuffer;
     textget = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
     textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
-    //printf("%s",textget);
     strcpy(suggestword, textget);
     GtkTreeIter  iter;
     if (strcmp(textget,"")==0){     //neu search entry == null
         gtk_text_buffer_set_text(textbuffer,"",-1); //xoa text view
-        
     }
     else{
         check=btsel(sug, textget, defnTemp, sizeof(defnTemp), &rsize);
-        if (/**strcmp(defnTemp,"")==0*/check){  //neu khong tim duoc
-            // gtk_text_buffer_set_text(textbuffer,"Not found.\nInput to add",-1);
-            // gtk_widget_show(add);
-            //SearchSuggest(tree,NUMBERSUGGEST,suggestword,app);
+        if (check){  //neu khong tim duoc
             SearchSuggest(sug,NUMBERSUGGEST,suggests,app);
             isFind=0;
         }
         else{   //neu tim duoc
-            // gtk_text_buffer_set_text(textbuffer,defnTemp,-1);
-            // gtk_list_store_append(app->foundlist, &iter);
-            // gtk_list_store_set (app->foundlist, &iter, 0, textget, -1);
-            // gtk_widget_show(del);
-            // gtk_widget_show(edit);
+        
         }
     }
-    //btcls(tree); 
 }
-void key_enter(GtkButton *button,Widgets *app){
+
+void key_enter(GtkButton *button,Widgets *app){		//bam phim enter
     tree = btopn("data/tudienanhviet.dat", 0, 0);
     int check=1;
     char defnTemp[6500];
@@ -280,18 +234,14 @@ void key_enter(GtkButton *button,Widgets *app){
     textget = gtk_entry_get_text(GTK_ENTRY(app->searchentry));
     textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(app->textview));
     GtkTreeIter  iter;
-
     if (strcmp(textget,"")==0){     //neu search entry == null
         gtk_text_buffer_set_text(textbuffer,"",-1); //xoa text view
-        
     }
     else{
         check=btsel(tree, textget, defnTemp, sizeof(defnTemp), &rsize);
-        if (/**strcmp(defnTemp,"")==0*/check){  //neu khong tim duoc
+        if (check){  //neu khong tim duoc
              gtk_text_buffer_set_text(textbuffer,"Not found.\nInput to add",-1);
-             gtk_widget_show(add);
-            //SearchSuggest(tree,NUMBERSUGGEST,suggestword,app);
-            
+             gtk_widget_show(add);  
         }
         else{   //neu tim duoc
             gtk_text_buffer_set_text(textbuffer,defnTemp,-1);
@@ -326,12 +276,11 @@ void selectRow(GtkButton *button,Widgets *app){
     // btcls(tree); 
 }
 
-
-void showUndo(GtkButton *button,Widgets *app){
-    if(isFind)gtk_widget_show(undo);
+void showUndo(GtkButton *button,Widgets *app){	//an hien nut undo
+    //if(isFind)gtk_widget_show(undo);
 }
-
-int doUndo(GtkButton *button, Widgets *app){
+		
+int doUndo(GtkButton *button, Widgets *app){	//thuc hien undo
     tree = btopn("data/tudienanhviet.dat", 0, 0);
     gchar *textget;
     GtkTextBuffer *textbuffer;
@@ -342,21 +291,22 @@ int doUndo(GtkButton *button, Widgets *app){
     if(btsel(tree, textget, defnTemp, sizeof(defnTemp), &rsize)==0){
         gtk_text_buffer_set_text(textbuffer,defnTemp,-1);
     }
-    gtk_widget_hide(undo);
     btcls(tree); 
 }
+
 main (int argc, char *argv[])
 {
+	printf("\nHelpful Dictionary Program\n");
     GtkBuilder      *builder; 
-    GtkWidget       *window;
+    
     Widgets *widget = g_slice_new(Widgets);
     
-
     gtk_init (&argc, &argv);
+
     //init btree, mo file .dat
     btinit();
-    //tree = btopn("data/tudienanhviet.dat", 0, 0);
-    sug = btopn("data/sug.dat", 0, 0);
+    //tree = btopn("data/tudienanhviet.dat", 0, 0);	//file nay ko can mo nua
+    sug = btopn("data/tudienanhviet.old", 0, 0);	
 
     //khoi tao builder va cac widget
     builder = gtk_builder_new ();
@@ -375,13 +325,15 @@ main (int argc, char *argv[])
 	edit = GTK_WIDGET (gtk_builder_get_object (builder, "edit"));
 	del = GTK_WIDGET (gtk_builder_get_object (builder, "del"));
     undo = GTK_WIDGET (gtk_builder_get_object (builder, "undo"));
+
     treeview=GTK_WIDGET (gtk_builder_get_object (builder, "treeview"));
 	widget->searchentry = GTK_WIDGET( gtk_builder_get_object( builder, "searchentry" ) );
     widget->textview = GTK_WIDGET( gtk_builder_get_object( builder, "textview" ) );
     widget->foundlist = GTK_LIST_STORE( gtk_builder_get_object( builder, "foundlist" ) );
     widget->suggests = GTK_WIDGET( gtk_builder_get_object( builder, "suggests" ) );
-    buff=gtk_text_view_get_buffer(widget->textview);
-    g_signal_connect(G_OBJECT(buff) , "changed", G_CALLBACK(showUndo), (gpointer) window);
+
+    // buff=gtk_text_view_get_buffer(widget->textview);
+    // g_signal_connect(G_OBJECT(buff) , "changed", G_CALLBACK(showUndo), (gpointer) window);
 
     //tao ket noi singal 
     gtk_builder_connect_signals (builder, widget);
@@ -391,7 +343,7 @@ main (int argc, char *argv[])
     gtk_widget_show (window);   
 
     gtk_main ();
-    //close btree
+   
     btcls(tree);   
     btcls(sug);
     return 0;

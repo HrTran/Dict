@@ -1,172 +1,213 @@
+// Creator: 
+// Vu tuan Dat
+// ICT 58
+// Edit:
+// Nguyen Quang Hien
+// ICT 58
+
+
 #include <stdio.h>
 #include <string.h>
-#include "inc/btree.h"
 #include <stdlib.h>
+#include "inc/btree.h"
+typedef struct xau_s {
+	char tu[100];
+	char vitri[20];
+	char dodai[20];
+} XAU;
 
-typedef struct xau2Rec
-{
-  char s1[30];
-  char s2[10];
-} xau2;
+char *strrev(char *str){ 			/* reverse a string */    
+    char *p1, *p2;
 
-xau2 tachxau(char s[])
-{
-  xau2 a;
-  int i,n,d=0,k=1,t=1;
-  n=strlen(s);
-  for (i=1;i<=n;i++)
-    {
-      if(s[i-1]=='\t') {d=1;i++;}
-      if(d==0)  
-  {
-    a.s1[t-1]=s[i-1];
-    t++;
-  }
-      if(d==1)  
-  {
-    a.s2[k-1]=s[i-1];
-    k++;
-  }
-      a.s1[t-1]='\0';
-      a.s2[k-1]='\0';
+    if (! str || ! *str)
+        return str;
+    for (p1 = str, p2 = str + strlen(str) - 1; p2 > p1; ++p1, --p2){
+        *p1 ^= *p2;
+        *p2 ^= *p1;
+        *p1 ^= *p2;
     }
-  return a;
+    return str;
 }
 
+XAU xu_ly_xau(char *str) {			/* break the input into 3 parts */
+	XAU xuly;
+	int i=0, j=0;
+	char str_temp[strlen(str)];
+	str = strrev(str);
+	strncpy(xuly.dodai, str, 20);
+	strcpy(str_temp, str);
 
-long chiso(char ch,char*s)
-{
-  long i,n=strlen(s);
-  for(i=0;i<n;i++)
-    if(ch==s[i]) 
-      return i;
-}
-long luythua(long a,long n)
-{
-  long i,lt;
-  lt=1;
-  if(n==0)
-    return 1;
-  else
-    {
-      for(i=1;i<=n;i++)
-  {
-    lt=lt*a;
-  }
-      return lt;
-    }
-}
+	for (i=0; i<20; i++){
+		if (xuly.dodai[i] == ' ' || xuly.dodai[i] == '\t'){
+			xuly.dodai[i] = '\0';
+			j = i; break;
+		}
+	}
+	strrev(xuly.dodai);
 
-long coso10(char *s)
-{
-  long i,n=strlen(s);
-  long vt,coso=0;
-  char ma64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  for(i=0;i<n;i++)
-    {
-      vt=chiso(s[i],ma64);
-      coso += (long)vt*luythua(64,n-1-i);
-    }
-  return coso;
-}
+	i=0; while(str_temp[j] == ' ' || str_temp[j] == '\t') j++;
 
-// char*dichtiengviet(char t[])
-// {
-//   char*s;
-//   long vitri,dodai;
-//   xau2 a;
-//   FILE*fin;
-//   fin=fopen("data/anhviet109K.dict","r");
-//   a=tachxau(t);
-//   vitri=coso10(a.s1);
-//   dodai=coso10(a.s2);
-//   s=(char*)malloc(sizeof(char)*(dodai+1));
- 
-//   fseek(fin,vitri,SEEK_SET);
-//   fread(s,sizeof(char),dodai,fin);
-//   s[dodai]='\0';
-//   fclose(fin);
-//   return s;
-// }
-char*dichtiengviet(char t[],FILE *p)
-{
-  char*s;
-  long vitri,dodai;
-  xau2 a;
-  
-  a=tachxau(t);
-  vitri=coso10(a.s1);
-  dodai=coso10(a.s2);
-  s=(char*)malloc(sizeof(char)*(dodai+1));
- 
-  fseek(p,vitri,SEEK_SET);
-  fread(s,sizeof(char),dodai,p);
-  s[dodai]='\0';
-  return s;
-}
+	while (str_temp[j] != '\0' && str_temp[j] != ' ' && str_temp[j] != '\t'){
+		xuly.vitri[i] = str_temp[j];
+		i++;j++;
+	} 
+	xuly.vitri[i] = '\0';
+	strrev(xuly.vitri);
 
-BTA* nhapbtree(BTA*tree)
-{
-  FILE*p;
-  p=fopen("data/anhviet109K.dict","r");
-  int value;
-  int n;
-  FILE *fin;
-  char s1[100],s2[40],s[100],*s3;
-  tree=btcrt("data/tudienanhviet.dat",0,0);  //tao file btree: tudienanhviet.dat
-  btopn("data/tudienanhviet.dat",0,0);
-  fin=fopen("data/anhviet109K.index","r"); //doc file index
-  while(!feof(fin))
-    {
-      fscanf(fin,"%[^\t]\t%[^\n]\n",s1,s2);
-      s3=dichtiengviet(s2,p);
-      if (bfndky(tree,s1,&value)!=0)  //Neu s1 khong co
-	     {
-          //printf("\n%s-%s-%d",s1,s3,strlen(s3));
-	       btins(tree,s1,s3,strlen(s3)+1);   //insert vao btree
+	i=0; while(str_temp[j] == ' ' || str_temp[j] == '\t') j++;
 
-	     }
-      free(s3);
-    }
-  fclose(p);
-  fclose(fin);
-  return tree;
-}
+	while (str_temp[j] != '\0'){
+		xuly.tu[i] = str_temp[j];
+		i++;j++;	
+	} 
+	xuly.tu[i] = '\0';
+	strrev(xuly.tu);
 
-// BTA *taofiledat(BTA *tree){
-//   FILE *p;
-//   char s1[10000],s2[10000],s3[100];
-//   while(fgets(s1,10000,p)!=0){
-
-//   }
-
-// }
-
-BTA *tree;
-int main(){
-  btinit();
-  tree= btopn("data/tudienanhviet.dat",0,0);
-  if(tree==0)
-    {
-      tree=nhapbtree(tree);
-      // tree=xoatu(tree,fdel);
-      btcls(tree);
-    }
+	return xuly;
 }
 
 // int main(){
-//   FILE *fin;
-//   char s1[100],s2[40],s[100],*s3;
-//   btinit();
-//   fin=fopen("data/anhviet109K.index","r"); 
-//   int i;
-//   for(i=1;i<100;i++)
-//     {
-//       fscanf(fin,"%[^\t]\t%[^\n]\n",s1,s2);
-//       s3=dichtiengviet(s2);
-//       printf("\n%s-%s",s1,s3);
-//       free(s3);
-//     }
-//   fclose(fin);
-
+// 	XAU xaubatky;
+// 	char str[100] = "Vu Tuan Dat 		ICT58   	 sds";
+// 	xaubatky = xu_ly_xau(str);
+// 	printf("%s.\n%s.\n%s.\n", xaubatky.tu, xaubatky.vitri, xaubatky.dodai);
+// 	return 0;
 // }
+
+int lay_chiso (char ch, char *str) {
+	int i=0;
+	for (i=0; i<strlen(str); i++){
+		if (ch == str[i]) return i;
+	}
+}
+
+long luy_thua (int chiso, int luythua){
+	long ketqua=1;
+	while (luythua != 0){
+		ketqua*=64;
+		luythua--;
+	}
+	return chiso*ketqua;
+}
+
+long change_base_10(char *str) {  /* chuyen he co so 64 -> 10 */
+	char SAMPLE[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	long ketqua=0;
+	long sohang=0;
+	int i, n=strlen(str);
+	strrev(str);
+	for (i=0; i<n; i++){
+		sohang = luy_thua(lay_chiso(str[i], SAMPLE), i);
+		ketqua += sohang;
+	}
+	strrev(str);
+	return ketqua;
+}
+
+// int main(){
+// 	char str[] = "kbpP";
+// 	printf("%li\n", change_base_10(str));
+// 	return 0;
+// }
+
+char *timkiem(char *str, FILE *fp){            /* tim kiem nghia cua tu trong file tu dien */
+	XAU tach;
+	long vitri, dodai;
+	char *nghia;
+	tach = xu_ly_xau(str);
+	vitri = change_base_10(tach.vitri);
+	dodai = change_base_10(tach.dodai);
+	nghia = (char *)calloc(dodai+1, 1);
+	fseek(fp, vitri, SEEK_SET);
+	long n = ftell(fp);
+	fread(nghia, 1, dodai, fp);
+	nghia[dodai] = '\0';
+	return nghia;
+}
+
+// void insert_btree(){                 /* doc ly lieu vao cay */
+// 	FILE *fp1, *fp2;
+// 	BTA *tree;
+// 	char *str;
+// 	XAU daxuly;
+// 	fp1 = fopen("data/anhviet109K.index", "r");
+// 	fp2 = fopen("data/anhviet109K.dict", "r");
+// 	btinit();
+
+// 	tree = btcrt("data/tudienanhviet.dat", 0, 0);
+// 	btopn("data/tudienanhviet.dat", 0, 0);
+
+// 	while (!feof(fp1)) {
+// 		fgets(str, 81, fp1);
+// 		daxuly = xu_ly_xau(str);
+// 		btins(tree, daxuly.tu, timkiem(str, fp2), change_base_10(daxuly.dodai) + 1 );
+// 		free(str);
+// 	}
+// 	btcls(tree);
+// 	fclose(fp1);
+// 	fclose(fp2);
+// } 
+
+// int main(){
+// 	btinit();
+// 	insert_btree();	
+// }
+
+void tachString(char *a){
+	int i=0;
+	while(a[i]!='\t')i++;
+	a[i]='\0';
+}
+
+int main (){
+	
+	//char string[] = "enthusiasm	K4ej	BR";
+	FILE *fp1, *fp2;
+	btinit();
+	BTA *tree;
+	tree=btcrt("data/tudienanhviet.dat",0,0);
+	btopn("data/tudienanhviet.dat",0,0);
+	fp1 = fopen("data/anhviet109K.index", "r");
+	fp2 = fopen("data/anhviet109K.dict", "r");
+	//char *str = timkiem(string, fp2);
+	char string[100];
+	char temp[100];
+	char *str;
+	rewind(fp1);
+	// while(fgets(string,100,fp1)){
+		
+	// }
+	int value;
+	// int i=0;
+	// fgets(string,100,fp1);
+	// string[strlen(string)-1]='\0';
+	// tachString(string);
+	// printf("%s",string);
+	while(fgets(string,100,fp1)){
+		
+		// i++;
+		// if(i==10) break;
+		string[strlen(string)-1]='\0';
+		strcpy(temp,string);
+		tachString(string);
+		str=timkiem(temp,fp2);
+		
+		if (bfndky(tree,string,&value)!=0)  //Neu s1 khong co
+	     {
+	     	// printf("\n.%s.-.%s.",string,str);
+	       btins(tree,string,str,strlen(str)+1);   //insert vao btree
+	     }
+
+	}
+	btcls(tree);
+	fclose(fp1);
+	fclose(fp2);
+	return 0;
+}
+
+
+
+
+
+
+

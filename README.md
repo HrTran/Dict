@@ -1,31 +1,18 @@
-# Helpful Dictionary Program
-         Từ điển Anh - Việt. 
+# Dict
+		Từ điển Anh - Việt. 
+	Helpful Dictionary Program
 
-                Phiên bản 1.3 Beta
+		Phiên bản 1.5 
 
-  Hoàn thiện gần hết chức năng, 
-  Chỉnh giao diện hợp lý hơn. Thêm logo, tên trương trình
-  Thiếu chức năng xem lại từ đã tra(Làm cả ngày chưa được)
-
-   /////////////BUG  BUG  BUG  BUG  BUG  BUG  BUG  ///
-   BUG mới, chức năng restore hoạt động nhưng trương trình bị out ngay lập tức
-   Cần fix
-   -------------------------------------------------------
+Còn thiếu chức năng tự động tìm từ đã tra.
 
 Cách compile file taobtree.c
-gcc -o taotree taobtree.c libbt.a 
+gcc -o tree taobtree.c libbt.a 
 File taobtree.c này có tác dụng tạo ra file dữ liệu từ điển (file.dat) từ 2 file từ điển và file từ điển index.
-
-ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----
-File .dat vẫn chưa hoàn thiện(vì taobtree.c bị lỗi stack over flow) , vậy nên tôi đã cắt một nửa cuối của file dữ liệu nhằm hạn chế lỗi.
-Cần anh em viết lại hàm taobtree.c (gồm các hàm đổi cơ số, xử lý xâu) . 
-Tài liệu có thể tham khảo ở đây:
-http://www.quantrimang.com.vn/print/4973.aspx
-ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----
 
 CÁch sử dụng từ điển:
 -----------------------------------------
-Tạo file libbt.a trong btree 5.0 (make file)
+compile file libbt.a trong btree 5.0 (make file)
 copy file libbt.a vào thư mục gốc (dict)
 ------------------------------------------
 compile:
@@ -38,10 +25,12 @@ run:
 
 Nhóm 2
 Nguyễn Quang Hiển
-làm gui, code linh tinh
+làm gui, code tổng hợp
 Vũ Tuấn Đạt
-code console app
+code console 
+xử lý xâu chuỗi, tối ưu hóa thuật toán mã hóa file nhị phân
 Trần Tất Huy
-code console app
+code console
+tối ưu hóa thuật toán copy, xử lý dữ liệu
 Mai Minh Phụng
-làm slide, doc, tài liệu, hỗ trợ code
+làm slide, doc, tài liệu,thiết kế logo, giao diện , hỗ trợ code
