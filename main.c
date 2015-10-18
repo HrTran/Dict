@@ -5,6 +5,7 @@
 #include <string.h>
 #include "inc/btree.h"
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #define NUMBERSUGGEST 30
 #define MAXSUGGESTCHAR 100
@@ -20,6 +21,7 @@ typedef struct
 
 BTA *tree,*sug;
 GtkWidget  *window;
+Widgets *widget;
 
 GtkWidget  *restore, *about, *dev;
 GtkWidget  *search;
@@ -138,10 +140,11 @@ void SearchSuggest(BTA*b, int n, char* wordFind, Widgets *app)
             gtk_entry_set_text(app->suggests,""); 
             return;
         }
+
         strcpy(now, wordFind);
         if (strcmp(pre,now)==0) break;
-        strncat(suggests,now,strlen(now));
-        strncat(suggests,"  ",2);
+        strncat(suggests,now,strlen(now)+1);
+        strncat(suggests,"\t",2);
         strcpy(pre,now);
         if(strlen(suggests)>=MAXSUGGESTCHAR) break;
     }
@@ -149,7 +152,22 @@ void SearchSuggest(BTA*b, int n, char* wordFind, Widgets *app)
     strcpy(wordFind,tmp);
 }
 
-
+gboolean autoComplete(Widgets *wg,
+               GdkEvent  *event,
+               gpointer   user_data){
+	
+	gchar *textget;
+	char suggest[200];
+	char s1[20];
+	char s2[20];
+	GtkTreeIter  iter;
+	GdkEventKey key=event->key;
+	textget=gtk_entry_get_text(GTK_ENTRY(widget->suggests));
+	if(key.keyval==GDK_KEY_Tab){
+		
+	}
+	
+}
 
 void doSearch (GtkButton *button,Widgets *app){	//Khong su dung function nay nua. Su dung 2 function ben duoi de thay the
     char suggestword[85];
@@ -215,7 +233,7 @@ void quickSuggest(GtkButton *button,Widgets *app){
     else{
         check=btsel(sug, textget, defnTemp, sizeof(defnTemp), &rsize);
         if (check){  //neu khong tim duoc
-            SearchSuggest(sug,NUMBERSUGGEST,suggests,app);
+            SearchSuggest(sug,NUMBERSUGGEST,suggestword,app);
             isFind=0;
         }
         else{   //neu tim duoc
@@ -244,9 +262,12 @@ void key_enter(GtkButton *button,Widgets *app){		//bam phim enter
              gtk_widget_show(add);  
         }
         else{   //neu tim duoc
+        	if(!isFind){
+        		gtk_list_store_append(app->foundlist, &iter);
+            	gtk_list_store_set (app->foundlist, &iter, 0, textget, -1);
+        	}
             gtk_text_buffer_set_text(textbuffer,defnTemp,-1);
-            gtk_list_store_append(app->foundlist, &iter);
-            gtk_list_store_set (app->foundlist, &iter, 0, textget, -1);
+            
             gtk_widget_show(del);
             gtk_widget_show(edit);
             isFind=1;
@@ -297,16 +318,23 @@ int doUndo(GtkButton *button, Widgets *app){	//thuc hien undo
 main (int argc, char *argv[])
 {
 	printf("\nHelpful Dictionary Program\n");
+
+	btinit();
+	sug = btopn("data/tudienanhviet.old", 0, 0);	
+
     GtkBuilder      *builder; 
     
-    Widgets *widget = g_slice_new(Widgets);
+    GError     *error = NULL;
+
+    widget = g_slice_new(Widgets);
     
     gtk_init (&argc, &argv);
+    
 
     //init btree, mo file .dat
-    btinit();
+    
     //tree = btopn("data/tudienanhviet.dat", 0, 0);	//file nay ko can mo nua
-    sug = btopn("data/tudienanhviet.old", 0, 0);	
+    
 
     //khoi tao builder va cac widget
     builder = gtk_builder_new ();
@@ -346,6 +374,7 @@ main (int argc, char *argv[])
    
     btcls(tree);   
     btcls(sug);
+
     return 0;
 }
 

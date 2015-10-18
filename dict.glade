@@ -85,7 +85,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="always_show_image">True</property>
-                <signal name="clicked" handler="doSearch" swapped="no"/>
+                <signal name="clicked" handler="key_enter" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -107,6 +107,7 @@
                 <property name="primary_icon_sensitive">False</property>
                 <property name="placeholder_text" translatable="yes">Enter a word: </property>
                 <signal name="activate" handler="key_enter" swapped="no"/>
+                <signal name="key-press-event" handler="autoComplete" after="yes" swapped="no"/>
                 <signal name="search-changed" handler="quickSuggest" swapped="no"/>
               </object>
               <packing>

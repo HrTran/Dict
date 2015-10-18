@@ -1,18 +1,16 @@
 # Dict
-		Từ điển Anh - Việt. 
-	Helpful Dictionary Program
+         Từ điển Anh - Việt. 
 
-		Phiên bản 1.5 
-
-Còn thiếu chức năng tự động tìm từ đã tra.
+                Phiên bản 1.6 
 
 Cách compile file taobtree.c
 gcc -o tree taobtree.c libbt.a 
 File taobtree.c này có tác dụng tạo ra file dữ liệu từ điển (file.dat) từ 2 file từ điển và file từ điển index.
 
+
 CÁch sử dụng từ điển:
 -----------------------------------------
-compile file libbt.a trong btree 5.0 (make file)
+Tạo file libbt.a trong btree 5.0 (make file)
 copy file libbt.a vào thư mục gốc (dict)
 ------------------------------------------
 compile:
@@ -25,12 +23,10 @@ run:
 
 Nhóm 2
 Nguyễn Quang Hiển
-làm gui, code tổng hợp
+thiết kế gui, code tổng hợp
 Vũ Tuấn Đạt
-code console 
-xử lý xâu chuỗi, tối ưu hóa thuật toán mã hóa file nhị phân
+xử lý xâu , chuỗi, tối ưu hóa
 Trần Tất Huy
-code console
-tối ưu hóa thuật toán copy, xử lý dữ liệu
+code console app, nghiên cứu tăng tốc độ trương trình
 Mai Minh Phụng
-làm slide, doc, tài liệu,thiết kế logo, giao diện , hỗ trợ code
+làm slide, doc, tài liệu, debug,bố cục, photoshop
