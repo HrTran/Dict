@@ -152,21 +152,51 @@ void SearchSuggest(BTA*b, int n, char* wordFind, Widgets *app)
     strcpy(wordFind,tmp);
 }
 
+void xulyxau(char *input, char *output1, char *output2){
+	int i=0, j=0;
+	strcpy(output1, input);
+	while (output1[i] != '\0') {
+		if (output1[i] == '\t'){
+			output1[i] = '\0';
+			j=i; break;
+		}
+		i++;
+	}
+	while (input[j] == '\t') j++; 
+	i=0;
+
+	while (input[j] != '\0') {
+		output2[i] = input[j];
+		if (input[j] == '\t') {
+			output2[i] = '\0';
+			break;
+		}
+		i++; j++;
+	}
+}
+	char input[200];
+	char s1[100];
+	char s2[100];
 gboolean autoComplete(Widgets *wg,
                GdkEvent  *event,
                gpointer   user_data){
 	
-	gchar *textget;
-	char suggest[200];
-	char s1[20];
-	char s2[20];
+	gchar *sugget,*entryget;
+	
 	GtkTreeIter  iter;
 	GdkEventKey key=event->key;
-	textget=gtk_entry_get_text(GTK_ENTRY(widget->suggests));
-	if(key.keyval==GDK_KEY_Tab){
-		
-	}
 	
+	if(key.keyval==GDK_KEY_Tab){
+		sugget=gtk_entry_get_text(GTK_ENTRY(widget->suggests));
+		entryget=gtk_entry_get_text(GTK_ENTRY(wg));
+		strcpy(input,sugget);
+		xulyxau(input,s1,s2);
+		if(strcmp(entryget,s1)!=0) gtk_entry_set_text(wg,s1);
+		else{
+			 gtk_entry_set_text(wg,s2);
+			 SearchSuggest(sug,NUMBERSUGGEST,s2,widget);
+		}
+	}
 }
 
 void doSearch (GtkButton *button,Widgets *app){	//Khong su dung function nay nua. Su dung 2 function ben duoi de thay the
@@ -229,6 +259,7 @@ void quickSuggest(GtkButton *button,Widgets *app){
     GtkTreeIter  iter;
     if (strcmp(textget,"")==0){     //neu search entry == null
         gtk_text_buffer_set_text(textbuffer,"",-1); //xoa text view
+        gtk_entry_set_text(app->suggests,"");
     }
     else{
         check=btsel(sug, textget, defnTemp, sizeof(defnTemp), &rsize);
