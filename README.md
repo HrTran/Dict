@@ -1,28 +1,18 @@
 # Dict
          Từ điển Anh - Việt. 
+	Helpful Dictionary Program
+                Phiên bản 1.6 release
 
-                Phiên bản 1.2
+Yêu cầu cài đặt bộ gtk 3.0
 
-  update chức năng danh sách từ đã tra
-  thêm chức năng gợi ý theo thời gian thực
-
-   /////////////BUG  BUG  BUG  BUG  BUG  BUG  BUG  ///
-   BUG mới, chức năng restore hoạt động nhưng trương trình bị out ngay lập tức
-   Cần fix
-   -------------------------------------------------------
-
+Tạo file binary CSDL cho btree bằng trương trình taobtree.c
+-----------------------------------------
 Cách compile file taobtree.c
-gcc -o taotree taobtree.c libbt.a 
-File taobtree.c này có tác dụng tạo ra file dữ liệu từ điển (file.dat) từ 2 file từ điển và file từ điển index.
+gcc -o tree taobtree.c libbt.a 
+-----------------------------------------
 
-ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----
-File .dat vẫn chưa hoàn thiện(vì taobtree.c bị lỗi stack over flow) , vậy nên tôi đã cắt một nửa cuối của file dữ liệu nhằm hạn chế lỗi.
-Cần anh em viết lại hàm taobtree.c (gồm các hàm đổi cơ số, xử lý xâu) . 
-Tài liệu có thể tham khảo ở đây:
-http://www.quantrimang.com.vn/print/4973.aspx
-ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----ERROR----
+CÁch sử dụng từ điển HDP:
 
-CÁch sử dụng từ điển:
 -----------------------------------------
 Tạo file libbt.a trong btree 5.0 (make file)
 copy file libbt.a vào thư mục gốc (dict)
@@ -37,10 +27,10 @@ run:
 
 Nhóm 2
 Nguyễn Quang Hiển
-làm gui, code linh tinh
+design, code tổng hợp
 Vũ Tuấn Đạt
-code console app
+code - xử lý xâu chuỗi, tối ưu hóa thuật toán xây dựng CSDL
 Trần Tất Huy
-code console app
+code console app - cải tiến, nâng cấp thuật toán tìm kiếm, sao chép file
 Mai Minh Phụng
-làm slide, doc, tài liệu, hỗ trợ code
+tìm kiếm tài liệu, công cụ, vẽ, debug, code linh tinh.
