@@ -1,18 +1,13 @@
 # Dict
          Từ điển Anh - Việt. 
-	Helpful Dictionary Program
-                Phiên bản 1.6 release
 
-Yêu cầu cài đặt bộ gtk 3.0
+                Phiên bản 1.5.1 release
 
-Tạo file binary CSDL cho btree bằng trương trình taobtree.c
------------------------------------------
 Cách compile file taobtree.c
 gcc -o tree taobtree.c libbt.a 
------------------------------------------
+File taobtree.c này có tác dụng tạo ra file dữ liệu từ điển (file.dat) từ 2 file từ điển và file từ điển index.
 
-CÁch sử dụng từ điển HDP:
-
+CÁch sử dụng từ điển:
 -----------------------------------------
 Tạo file libbt.a trong btree 5.0 (make file)
 copy file libbt.a vào thư mục gốc (dict)
@@ -27,10 +22,10 @@ run:
 
 Nhóm 2
 Nguyễn Quang Hiển
-design, code tổng hợp
+làm gui, code tong hop
 Vũ Tuấn Đạt
-code - xử lý xâu chuỗi, tối ưu hóa thuật toán xây dựng CSDL
+xu ly xau, chuoi, toi uu hoa thuat toan
 Trần Tất Huy
-code console app - cải tiến, nâng cấp thuật toán tìm kiếm, sao chép file
+code console app
 Mai Minh Phụng
-tìm kiếm tài liệu, công cụ, vẽ, debug, code linh tinh.
+làm slide, doc, tài liệu, hỗ trợ code
