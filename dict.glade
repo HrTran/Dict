@@ -108,7 +108,7 @@
                 <property name="primary_icon_sensitive">False</property>
                 <property name="placeholder_text" translatable="yes">Enter a word: </property>
                 <signal name="activate" handler="key_enter" swapped="no"/>
-                <signal name="key-press-event" handler="autoComplete" after="yes" swapped="no"/>
+                <signal name="key-press-event" handler="autoComplete" swapped="no"/>
                 <signal name="search-changed" handler="quickSuggest" swapped="no"/>
               </object>
               <packing>
@@ -218,6 +218,17 @@
                 <property name="position">3</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkLabel" id="thongbao">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -253,7 +264,9 @@
                     <property name="enable_grid_lines">vertical</property>
                     <signal name="cursor-changed" handler="selectRow" swapped="no"/>
                     <child internal-child="selection">
-                      <object class="GtkTreeSelection" id="treeview-selection7"/>
+                      <object class="GtkTreeSelection" id="treeviewselection">
+                        <signal name="changed" handler="selectRow" swapped="no"/>
+                      </object>
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewcolumn1">
