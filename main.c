@@ -28,6 +28,7 @@ GtkWidget  *search;
 GtkWidget  *add, *edit, *del , *undo;
 GtkWidget  *treeview;
 GtkWidget  *aboutdialog;
+GtkWidget  *thongbao;
 
 GtkTextBuffer *buff;
 
@@ -35,6 +36,7 @@ void closeAbout(GtkWidget *button, Widgets *app){
     gtk_widget_hide(aboutdialog);
 }
 
+char thongbao_text[100];
 #define size 512
 void RestoreDataFile()
 {
@@ -61,7 +63,8 @@ void doRestore(GtkWidget *button, Widgets *app){
     gtk_widget_hide(del);
     gtk_widget_hide(edit);
     gtk_widget_hide(add);
-    
+    strcpy(thongbao_text,"Restore done !");
+    gtk_label_set_text(thongbao,thongbao_text);
 }
 
 void doEdit(GtkWidget *button, Widgets *app){
@@ -77,7 +80,8 @@ void doEdit(GtkWidget *button, Widgets *app){
     if (bfndky(tree,text,&value)==0)
     {
         btupd(tree,text,btext,strlen(btext)+1);   
-        
+        strcpy(thongbao_text,"Edited data !");
+        gtk_label_set_text(thongbao,thongbao_text);
     }
 
     gtk_widget_hide(add);
@@ -97,7 +101,8 @@ void doAdd(GtkWidget *button, Widgets *app){
     if (bfndky(tree,text,&value)!=0)  //Neu s1 khong co
     {
         btins(tree,text,btext,strlen(btext)+1);   //insert vao btree
-       
+       	strcpy(thongbao_text,"Added data !");
+        gtk_label_set_text(thongbao,thongbao_text);
     }
     gtk_widget_hide(add);
     btcls(tree); 
@@ -117,13 +122,15 @@ void doRemove(GtkWidget *button, Widgets *app)
     if (exist == 0)
     {
         bdelky(tree, text);
-        
+        gtk_entry_set_text(app->searchentry,"");
+	    gtk_text_buffer_set_text(textbuffer,"",-1);
+	    
+        strcpy(thongbao_text,"Deleted data !");
+    	gtk_label_set_text(thongbao,thongbao_text);
     }  
- 	gtk_entry_set_text(app->searchentry,"");
-    gtk_text_buffer_set_text(textbuffer,"",-1);
-    gtk_widget_hide(del);
-    gtk_widget_hide(edit);
-    gtk_widget_hide(add);
+ 	gtk_widget_hide(del);
+	gtk_widget_hide(edit);
+	gtk_widget_hide(add);
     btcls(tree); 
 }
 
@@ -241,14 +248,16 @@ gboolean autoComplete(Widgets *wg,
 		else{
 			 gtk_entry_set_text(wg,s2);
 			 SearchSuggest(sug,NUMBERSUGGEST,s2,widget);
-			 return 1;
+			 
 		}
+		return 1;
 	}
 	return 0;
 }
 void quickSuggest(GtkButton *button,Widgets *app){
     char suggestword[85];
-    
+    strcpy(thongbao_text,"");
+    gtk_label_set_text(thongbao,thongbao_text);
     
     if(!isFind){  
         gtk_widget_hide(del);
@@ -301,6 +310,8 @@ void key_enter(GtkButton *button,Widgets *app){		//bam phim enter
         if (check){  //neu khong tim duoc
              gtk_text_buffer_set_text(textbuffer,"Not found.\nInput to add",-1);
              gtk_widget_show(add);  
+             strcpy(thongbao_text,"Do you wanna add a new word ?\nInput the meaning of word below here.");
+    		 gtk_label_set_text(thongbao,thongbao_text);
         }
         else{   //neu tim duoc
         	if(!isFind){
@@ -323,7 +334,7 @@ void selectRow(GtkTreeSelection *treeselection,
 	// char defnTemp[6500];
  //    int rsize;
  //    GtkTextBuffer *textbuffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget->textview));
-	// gchar *getselect=gtk_tree_selection_get_user_data(treeviewselection);
+	// gchar *getselect=gtk_tree_selection_get_user_data(treeselection);
  //    tree = btopn("data/tudienanhviet.dat", 0, 0);
  //    if(btsel(tree, getselect, defnTemp, sizeof(defnTemp), &rsize)==0) 
  //    	gtk_text_buffer_set_text(textbuffer,defnTemp,-1);
@@ -388,6 +399,9 @@ main (int argc, char *argv[])
     undo = GTK_WIDGET (gtk_builder_get_object (builder, "undo"));
 
     treeview=GTK_WIDGET (gtk_builder_get_object (builder, "treeview"));
+
+    thongbao=GTK_WIDGET (gtk_builder_get_object (builder, "thongbao"));
+	
 
 	widget->searchentry = GTK_WIDGET( gtk_builder_get_object( builder, "searchentry" ) );
     widget->textview = GTK_WIDGET( gtk_builder_get_object( builder, "textview" ) );

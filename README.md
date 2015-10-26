@@ -1,7 +1,7 @@
 # Dict
          Từ điển Anh - Việt. 
 
-                Phiên bản 1.5.1 release
+                Phiên bản 1.7 release
 
 Cách compile file taobtree.c
 gcc -o tree taobtree.c libbt.a 
